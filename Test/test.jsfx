@@ -1,0 +1,26 @@
+desc:test
+tags: test
+version: 0.01
+author: d34dmeat
+changelog: test.
+provides:
+  test.jsfx
+about:
+  # test
+  
+  ### Demos
+  You can't find a tutorial.
+  
+license: MIT
+
+in_pin:left input
+in_pin:right input
+out_pin:left output 
+out_pin:right output
+
+
+slider1:Cuts=1<0,4,1>-Cuts
+slider2:Freq1=0.2<0,1,.0001>-Frequency 1
+
+
+@init
