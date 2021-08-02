@@ -4,7 +4,7 @@
     <reapack name="test.jsfx" type="effect" desc="testing (d34dmeat) [BETA]">
       <version name="0.01" author="d34dmeat" time="2021-08-02T15:05:07Z">
         <changelog><![CDATA[Initial commit]]></changelog>
-        <source>https://github.com/d34dmeat/JSFX/raw/main/Test/test.jsfx</source>
+        <source>https://raw.githubusercontent.com/D34dmeat/JSFX/main/Test/test.jsfx</source>
       </version>
     </reapack>
   </category>
