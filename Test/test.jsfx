@@ -1,8 +1,8 @@
-desc:test
+desc:test does absolutely nothing
 tags: test
 version: 0.01
 author: d34dmeat
-changelog: test.
+changelog: this is a test file that does nothing.
 provides:
   test.jsfx
 about:
