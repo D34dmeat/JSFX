@@ -27,6 +27,7 @@ out_pin:right output
 slider1:Cuts=1<0,4,1>-Cuts
 slider2:Freq1=0.2<0,1,.0001>-Frequency
 slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Greetings
+slider2:Vol1=0.2<0,1.5,.0001>-vol
 
 @init
 
@@ -35,5 +36,7 @@ slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Greetings
 @block
 
 @sample
-spl0 = spl0;
-spl1 = spl1;
+spl0 = spl0 * Vol1;
+spl1 = spl1 * Vol1;
+spl0 = max(min(spl0, 1), -1);
+spl1 = max(min(spl1, 1), -1);
