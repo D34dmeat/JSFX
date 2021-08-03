@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools" commit="9f6670426c0f1823bc9265898484a436a167c7da">
+<index version="1" name="d34dmeat Tools">
   <category name="NewTest">
     <reapack name="yetAnotherTest.jsfx" type="effect" desc="testings (d34dmeat) does not do anything">
       <version name="0.02" author="d34dmeat" time="2021-08-03T07:54:13Z">
