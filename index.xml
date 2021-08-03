@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools">
+<index version="1" name="d34dmeat Tools" commit="9f6670426c0f1823bc9265898484a436a167c7da">
   <category name="NewTest">
     <reapack name="yetAnotherTest.jsfx" type="effect" desc="testings (d34dmeat) does not do anything">
       <version name="0.02" author="d34dmeat" time="2021-08-03T07:54:13Z">
         <source>https://github.com/D34dmeat/JSFX/raw/9f6670426c0f1823bc9265898484a436a167c7da/NewTest/yetAnotherTest.jsfx</source>
+      </version>
+      <version name="0.01" author="d34dmeat" time="2021-08-03T07:21:12Z">
+        <source>https://github.com/D34dmeat/JSFX/raw/b353f0a9063eaf53347e8e3591e44dd10307909b/NewTest/yetAnotherTest.jsfx</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Test">
+    <reapack name="test.jsfx" type="effect" desc="test does absolutely nothing">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 test\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs28 Demos\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 You can't find a tutorial.\par}
+}
+]]></description>
+      </metadata>
+      <version name="0.01" author="d34dmeat" time="2021-08-02T14:29:07Z">
+        <changelog><![CDATA[test.]]></changelog>
+        <source>https://github.com/D34dmeat/JSFX/raw/6ff1e5afd50abb9e57ce042fe67250c57f4eb9e9/Test/test.jsfx</source>
       </version>
     </reapack>
   </category>
