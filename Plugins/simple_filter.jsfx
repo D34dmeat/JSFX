@@ -27,8 +27,20 @@ out_pin:right output
 slider1:Cuts=1<0,4,1>-Cuts
 slider2:Freq1=0.2<0,1,.0001>-Frequency
 slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Greetings
-slider4:Vol1=0.2<0,1.5,.0001>-vol
+slider4:Vol1=0.2<-96,96,.0001>-vol
+
 slider5:Bias=0 < 0, 1, .0001 > transistor - > tube(style)
+
+slider64:Gain_val=0 < -96, 96, .0001 > final gain(dB)
+
+// these basic db calculations were stolen from beaunus
+function dbToFactor(dbValue)(
+    10 ^ (dbValue / 20);
+);
+
+function FactorTodb(factor)(
+    (20 * log(factor)) / (log(10));
+);
 
 @init
 
@@ -37,8 +49,10 @@ slider5:Bias=0 < 0, 1, .0001 > transistor - > tube(style)
 @block
 
 @sample
-spl0 = spl0 * Vol1;
-spl1 = spl1 * Vol1;
+spl0 *= dbToFactor(Vol1);
+spl1 *= dbToFactor(Vol1);
+
+
 /*
  * Bias signal for tube style processing (more even harmonics.
  */
@@ -47,5 +61,19 @@ spl0 *= (1 - (bias));
 spl1 *= (1 - (bias));
 spl0 += bias;
 spl1 += bias;
+
+
+spl0 *= dbToFactor(Gain_val);
+spl1 *= dbToFactor(Gain_val);
+
+/*
+ * Un-bias signal.
+ */
+spl0 -= bias;
+spl1 -= bias;
+spl0 /= (1 - (bias));
+spl1 /= (1 - (bias));
+
+// clip signal
 spl0 = max(min(spl0, 1), -1);
 spl1 = max(min(spl1, 1), -1);
