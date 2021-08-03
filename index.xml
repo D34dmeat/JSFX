@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools" commit="1fdef6de3315b2cd2f436d31a6ede0b83b8589ba">
+<index version="1" name="d34dmeat Tools" commit="86cc69705f570dce5ac8228f099aecc7cdc7584f">
   <category name="NewTest">
     <reapack name="yetAnotherTest.jsfx" type="effect" desc="testings (d34dmeat) does not do anything">
       <version name="0.02" author="d34dmeat" time="2021-08-03T07:54:13Z">
@@ -11,6 +11,27 @@
     </reapack>
   </category>
   <category name="Plugins">
+    <reapack name="simple_filter.jsfx" type="effect" desc="SimpleFilter (d34dmeat)">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 test\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 this is a test description waiting to happen\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 tutorial\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 if it actually did something a tutorial would be nice.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs28 Demos\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 there are no demos at this time.\par}
+}
+]]></description>
+      </metadata>
+      <version name="0.01" author="d34dmeat" time="2021-08-03T09:17:52Z">
+        <changelog><![CDATA[trying some things out.]]></changelog>
+        <source>https://github.com/D34dmeat/JSFX/raw/203a6c98c53b271a0b83129e9a2c33c3a15b7b5a/Plugins/simple_filter.jsfx</source>
+        <source file="simple_data/simple.jsfx-inc">https://github.com/D34dmeat/JSFX/raw/203a6c98c53b271a0b83129e9a2c33c3a15b7b5a/Plugins/simple_data/simple.jsfx-inc</source>
+      </version>
+    </reapack>
     <reapack name="test.jsfx" type="effect" desc="test does absolutely nothing">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
