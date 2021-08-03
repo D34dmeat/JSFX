@@ -26,7 +26,7 @@ out_pin:right output
 
 slider1:Cuts=1<0,4,1>-Cuts
 slider2:Freq1=0.2<0,1,.0001>-Frequency
-slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Frequency
+slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Greetings
 
 @init
 
