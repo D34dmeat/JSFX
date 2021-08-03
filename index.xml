@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools">
-    <category name="Example">
+<index version="1" name="d34dmeat Tools" commit="b353f0a9063eaf53347e8e3591e44dd10307909b">
+  <category name="Example">
     <reapack name="cfillion_Hello world.lua" type="script" desc="Hello world">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
@@ -18,6 +18,32 @@ Markdown
       </metadata>
       <version name="1.0" author="cfillion" time="2021-01-04T23:30:32Z">
         <source main="main">https://github.com/cfillion/reapack-repository-template/raw/58a3e39ba95bd0f35846aa1f39aa4cb2574295e1/Example/cfillion_Hello%20world.lua</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="NewTest">
+    <reapack name="yetAnotherTest.jsfx" type="effect" desc="testings (d34dmeat) does not do anything">
+      <version name="0.01" author="d34dmeat" time="2021-08-03T07:21:12Z">
+        <source>https://github.com/D34dmeat/JSFX/raw/b353f0a9063eaf53347e8e3591e44dd10307909b/NewTest/yetAnotherTest.jsfx</source>
+      </version>
+    </reapack>
+  </category>
+  <category name="Test">
+    <reapack name="test.jsfx" type="effect" desc="test does absolutely nothing">
+      <metadata>
+        <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
+{\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
+\widowctrl\hyphauto
+
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 test\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs28 Demos\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 You can't find a tutorial.\par}
+}
+]]></description>
+      </metadata>
+      <version name="0.01" author="d34dmeat" time="2021-08-02T14:29:07Z">
+        <changelog><![CDATA[test.]]></changelog>
+        <source>https://github.com/D34dmeat/JSFX/raw/6ff1e5afd50abb9e57ce042fe67250c57f4eb9e9/Test/test.jsfx</source>
       </version>
     </reapack>
   </category>
@@ -42,27 +68,11 @@ Markdown
 {\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
 \widowctrl\hyphauto
 
-{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 d34dmeats Repository Template test\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 A template for GitHub-hosted ReaPack repositories with automated {\field{\*\fldinst{HYPERLINK "https://github.com/cfillion/reapack-index"}}{\fldrslt{\ul
-reapack-index
-}}}
- running from GitHub Actions.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Replace the name of the repository in {\field{\*\fldinst{HYPERLINK "/index.xml"}}{\fldrslt{\ul
-index.xml
-}}}
- when using this template. This will be the name shown in ReaPack.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \f1 <index version="1" name="Name of your repository here">\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs32 linking is key\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 copy this and add to your reapack repositorys\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 \f1 https://github.com/D34dmeat/JSFX-Reapack/raw/master/index.xml\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 Each package file is expected to begin with a metadata header. See {\field{\*\fldinst{HYPERLINK "https://github.com/cfillion/reapack-index/wiki/Packaging-Documentation"}}{\fldrslt{\ul
-Packaging Documentation
-}}}
- on reapack-index's wiki.\par}
-{\pard \ql \f0 \sa180 \li0 \fi0 The URL to import in ReaPack is {\field{\*\fldinst{HYPERLINK "https://github.com/D34dmeat/JSFX-Reapack/raw/master/index.xml"}}{\fldrslt{\ul
-https://github.com/{\f1 <your username>}/{\f1 <repository name>}/raw/master/index.xml
-}}}
-.\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs36 JSFX\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 Testing out creating JSFX scripts for Reaper\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 try this for reapack\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \f1     https://raw.githubusercontent.com/D34dmeat/JSFX/main/index.xml\par}
+{\pard \ql \f0 \sa180 \li0 \fi0 \b \fs32 Just try to add something to the readme\par}
 }
 ]]></description>
   </metadata>
