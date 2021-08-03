@@ -1,15 +1,19 @@
 desc:test does absolutely nothing
 tags: test
-version: 0.01
+version: 0.02
 author: d34dmeat
 changelog: this is a test file that does nothing.
 provides:
   test.jsfx
 about:
   # test
+  this is a test description waiting to happen
+  
+  # tutorial
+  if it actually did something a tutorial would be nice.
   
   ### Demos
-  You can't find a tutorial.
+  there are no demos at this time.
   
 license: MIT
 
