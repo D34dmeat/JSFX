@@ -1,15 +1,17 @@
-desc:test does absolutely nothing
+desc:test (does absolutely nothing)
 tags: test
 version: 0.02
 author: d34dmeat
-changelog: this is a test file that does nothing.
+changelog: 
+  + this is a test file that does nothing.
+  + it's actually kind of sad
 provides:
   test.jsfx
 about:
-  # test
+  # Test
   this is a test description waiting to happen
   
-  # tutorial
+  # Tutorial
   if it actually did something a tutorial would be nice.
   
   ### Demos
@@ -24,7 +26,7 @@ out_pin:right output
 
 
 slider1:Cuts=1<0,4,1>-Cuts
-slider2:Freq1=0.2<0,1,.0001>-Frequency 1
+slider2:Freq1=0.2<0,1,.0001>-Frequency
 
 
 @init
@@ -34,3 +36,5 @@ slider2:Freq1=0.2<0,1,.0001>-Frequency 1
 @block
 
 @sample
+spl0 = spl0;
+spl1 = spl1;
