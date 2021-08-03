@@ -1,0 +1,37 @@
+desc:SimpleFilter (d34dmeat)
+tags: filter
+version: 0.01
+author: d34dmeat
+changelog: trying some things out.
+provides:
+  simple_data/*
+about:
+  # test
+  this is a test description waiting to happen
+  
+  # tutorial
+  if it actually did something a tutorial would be nice.
+  
+  ### Demos
+  there are no demos at this time.
+  
+license: MIT
+
+in_pin:left input
+in_pin:right input
+out_pin:left output 
+out_pin:right output
+
+
+slider1:Cuts=1<0,4,1>-Cuts
+slider2:Freq1=0.2<0,1,.0001>-Frequency 1
+
+
+@init
+
+@slider
+
+@block
+
+@sample
+
