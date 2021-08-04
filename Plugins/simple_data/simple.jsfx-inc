@@ -1,4 +1,6 @@
-// adding some extra functions
+
+@init
+
 //filterdef
   LOWPASS   = 0;
   HIGHPASS   = 1;
@@ -59,3 +61,24 @@ function mk_biq(filtertype, dbgain,  q, centerfreq, ibw)
   israte = srate;
   gain = dbgain;
   );
+  
+  // filter function basically stolen from chkhld
+    // Peak Filter
+    //
+    function eqPK (SR, Hz, Q, dB) instance (a1, a2, a3, m0, m1, m2) local (A, g, k)
+    (
+      A = pow(10.0, dB * 0.025); g = tan($PI * (Hz / SR)); k = 1.0 / (Q * A);
+      a1 = 1.0 / (1.0 + g * (g + k)); a2 = a1 * g; a3 = a2 * g;
+      m0 = 1.0; m1 = k * ((A * A) - 1.0); m2 = 0.0;
+    );
+    
+  //
+    // Per-sample EQ band tick function
+    //
+    function eqTick (sample) instance (v1, v2, v3, ic1eq, ic2eq)
+    (
+      v3 = sample - ic2eq; v1 = this.a1 * ic1eq + this.a2 * v3;
+      v2 = ic2eq + this.a2 * ic1eq + this.a3 * v3;
+      ic1eq = 2.0 * v1 - ic1eq; ic2eq = 2.0 * v2 - ic2eq;
+      (this.m0 * sample + this.m1 * v1 + this.m2 * v2);
+    );

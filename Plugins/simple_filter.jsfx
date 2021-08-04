@@ -25,32 +25,39 @@ out_pin:right output
 
 
 import simple.jsfx-inc
-
-
 // insert a - before slider text to hide slider -- -Cuts
 slider1:Cuts=1<0,4,1>-Cuts
-slider2:Freq1=0.2<0,1,.0001>Frequency
+slider2:Freq1=2000<20,20000,.1>Frequency center
 slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>Greetings
 slider4:Vol1=0.2<-96,96,.0001>vol
 
-slider5:Bias=0 < 0, 1, .0001 > transistor - > tube(style)
+slider5:BBias=0 < 0, 1, .0001 > transistor - > tube(style)
 
-slider6:50<10,200,1>Freqency (Hz)
+slider6:50<10,20000,1>Freqency (Hz)
 slider7:-12<-120,12,1>Wet (dB)
 slider8:-3<-120,12,1>Dry (dB)
+slider9:mid_gain=-3<-120,12,1>Midgain (dB)
+slider10:filter_db=-30<-120,92,1>Filter gain (dB)
+slider11:Q=0.25<0,6,.001>Q
 
-slider64:Gain_val=0 < -96, 96, .0001 > final gain(dB)
+slider64:Gain_val=0 < -96, 96, .0001 >final gain(dB)
 
+/ these basic db calculations were stolen from beaunus
+
+
+@init
 // these basic db calculations were stolen from beaunus
 function dbToFactor(dbValue)(
     10 ^ (dbValue / 20);
-);
+  );
 
 function FactorTodb(factor)(
     (20 * log(factor)) / (log(10));
-);
+  );
+filterL.eqPK(srate, Freq1, Q, filter_db); 
+filterR.eqPK(srate, Freq1, Q, filter_db);
 
-@init
+bias = 0;
 
 b1Det = -exp(-300 / srate );
 a0Det = 1.0 + b1Det;
@@ -64,7 +71,7 @@ a0Env2 = 1.0 + b1Env2;
 
 adj = 2*$pi*slider6 / srate;
 
-
+bias = BBias / 2;
 wet = 2^(slider7/6);
 dry = 2^(slider8/6);
 
@@ -72,18 +79,21 @@ gain = 0;
 tmpDet = 0;
 tmpEnv1 = 0.1;
 tmpEnv2 = 0;
+//buf[] = 0,0,0;
 
 @block
 
 @sample
 spl0 *= dbToFactor(Vol1);
 spl1 *= dbToFactor(Vol1);
-
+filterL.eqPK(srate, Freq1, Q, filter_db); 
+filterR.eqPK(srate, Freq1, Q, filter_db);
 
 /*
  * Bias signal for tube style processing (more even harmonics.
  */
- bias = Bias / 2;
+ 
+// bias = Bias / 2;
 spl0 *= (1 - (bias));
 spl1 *= (1 - (bias));
 spl0 += bias;
@@ -93,9 +103,32 @@ spl1 += bias;
 spl0 *= dbToFactor(Gain_val);
 spl1 *= dbToFactor(Gain_val);
 
+
+mgain = pregain(mid_gain);
+
+values == 0 ?
+  (
+  spl0 *= filterL.eqTick(spl0);
+  spl1 *= filterR.eqTick(spl1);
+  ): values == 1 ?
+  (
+    spl0 = filterL.eqTick(spl0);
+    spl1 = filterR.eqTick(spl1);
+    )
+    :values == 2 ?
+    (
+      spl0 += filterL.eqTick(spl0);
+      spl1 += filterR.eqTick(spl1);
+      )
+    :values == 3 ?
+        (
+          spl0 = filterL.eqTick(spl0);
+          spl1 = filterR.eqTick(spl1);
+          );
 /*
  * Un-bias signal.
  */
+ 
 spl0 -= bias;
 spl1 -= bias;
 spl0 /= (1 - (bias));
@@ -116,7 +149,7 @@ gain = min(max(env2/env1,1)-1,1);
 
 gain == 0 ? pos=0;
 
-spl0 = sin(pos)*gain*wet + spl0*dry;
-spl1 = sin(pos)*gain*wet + spl1*dry;
+spl0 = sin(pos)*gain*wet + spl0*dry + spl0*mgain;
+spl1 = sin(pos)*gain*wet + spl1*dry + spl1*mgain;
 
 pos += adj;
