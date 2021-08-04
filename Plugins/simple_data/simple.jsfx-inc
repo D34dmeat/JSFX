@@ -6,6 +6,8 @@ function doSomething(varl)
 local(last_var)
 public(srate)
 instance()
-(
-  lasr_var = varl * $pi * cos(varl/srate);
-);
+  (
+  last_var = varl * $pi * cos(varl/srate);
+  );
+  
+  
