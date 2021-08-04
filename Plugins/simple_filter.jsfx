@@ -24,10 +24,14 @@ out_pin:left output
 out_pin:right output
 
 
+import simple.jsfx-inc
+
+
+// insert a - before slider text to hide slider -- -Cuts
 slider1:Cuts=1<0,4,1>-Cuts
-slider2:Freq1=0.2<0,1,.0001>-Frequency
-slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>-Greetings
-slider4:Vol1=0.2<-96,96,.0001>-vol
+slider2:Freq1=0.2<0,1,.0001>Frequency
+slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>Greetings
+slider4:Vol1=0.2<-96,96,.0001>vol
 
 slider5:Bias=0 < 0, 1, .0001 > transistor - > tube(style)
 

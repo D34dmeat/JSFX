@@ -1,0 +1,7 @@
+// adding some extra functions
+
+@init
+
+function doSomething(varl){
+    
+}
