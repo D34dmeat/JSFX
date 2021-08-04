@@ -1,11 +1,61 @@
 // adding some extra functions
+//filterdef
+  LOWPASS   = 0;
+  HIGHPASS   = 1;
+  BANDPASS   = 2;
+  NOTCH    = 3;
+  PEAK    = 4;
+  LOWSHELF  = 5;
+  HIGHSHELF  = 6;
 
-@init
+function doSomething (var1, var2)
+  local(last_var)
+  global()
+  instance(me)
+  (
+  last_var = var1 * var2;
+  // lasr_var = var1 * $pi * cos(varl/srate);
+  );
 
-function doSomething(varl)
-local(last_var)
-public(srate)
-instance()
-(
-  lasr_var = varl * $pi * cos(varl/srate);
-);
+function pregain(gain)
+  (
+  ret = (1.0 + 0.0932471 * gain + 0.00279033 * gain^2) /2
+  );
+  
+//function biquad_filter(src, dst, len, biq)();
+//(
+ // );
+  
+function mk_biq(filtertype, dbgain,  q, centerfreq, ibw)
+  global(srate)
+  local(A, omega, sn, cs, alpha, M_LN2, alpha_m_A, alpha_d_A, b0, b1, b2)
+  instance(type, A, a0, a1, a2, a3, a4, x1, x2, y1, y2, cf, bw, gain, israte)
+  (
+  type = filtertype;
+  A = 10^(dbgain / 40);
+  omega = ( 2 * $pi) * centerfreq / srate;
+  sn = sin(omega);
+  cs = cos(omega);
+  M_LN2 = 2; // unknown constant
+  //alpha = sn * sin(M_LN2 / 2 * bw * omega / sn);
+  alpha = sn / (2*q);
+  alpha_m_A = alpha * A;
+  alpha_d_A = alpha / A;
+  
+  b0 = 1 + alpha_m_A;
+  b1 = -2 * cs;
+  b2 = 1 - alpha_m_A;
+  a0 = b0 / (1 + alpha_d_A);
+  a1 = b1 / b1;
+  a2 = b2 / (1 - alpha_d_A);
+  a3 = a1 / a0;
+  a4 = a2 / a0;
+  x1 = 0;
+  x2 = 0;
+  y1 = 0;
+  y2 = 0;
+  cf = centerfreq;
+  bw = ibw;
+  israte = srate;
+  gain = dbgain;
+  );
