@@ -35,6 +35,10 @@ slider4:Vol1=0.2<-96,96,.0001>vol
 
 slider5:Bias=0 < 0, 1, .0001 > transistor - > tube(style)
 
+slider6:50<10,200,1>Freqency (Hz)
+slider7:-12<-120,12,1>Wet (dB)
+slider8:-3<-120,12,1>Dry (dB)
+
 slider64:Gain_val=0 < -96, 96, .0001 > final gain(dB)
 
 // these basic db calculations were stolen from beaunus
@@ -48,7 +52,26 @@ function FactorTodb(factor)(
 
 @init
 
+b1Det = -exp(-300 / srate );
+a0Det = 1.0 + b1Det;
+
+b1Env1 = -exp(-3 / srate );
+a0Env1 = 1.0 + b1Env1;
+b1Env2 = -exp(-30 / srate );
+a0Env2 = 1.0 + b1Env2;
+
 @slider
+
+adj = 2*$pi*slider6 / srate;
+
+
+wet = 2^(slider7/6);
+dry = 2^(slider8/6);
+
+gain = 0;
+tmpDet = 0;
+tmpEnv1 = 0.1;
+tmpEnv2 = 0;
 
 @block
 
@@ -81,3 +104,19 @@ spl1 /= (1 - (bias));
 // clip signal
 spl0 = max(min(spl0, 1), -1);
 spl1 = max(min(spl1, 1), -1);
+
+
+
+// added filtering wet/dry from LOSER 50Hz Kicker
+det = abs(sqrt(tmpDet = a0Det*(spl0+spl1)*2 - b1Det*tmpDet));
+env1 = sqrt(tmpEnv1 = a0Env1*det - b1Env1*tmpEnv1);
+env2 = sqrt(tmpEnv2 = a0Env2*det - b1Env2*tmpEnv2);
+
+gain = min(max(env2/env1,1)-1,1);
+
+gain == 0 ? pos=0;
+
+spl0 = sin(pos)*gain*wet + spl0*dry;
+spl1 = sin(pos)*gain*wet + spl1*dry;
+
+pos += adj;
