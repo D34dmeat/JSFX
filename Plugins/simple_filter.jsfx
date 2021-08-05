@@ -1,6 +1,6 @@
 desc:SimpleFilter (d34dmeat)
 tags: filter processing equalizer
-version: 0.03
+version: 0.031
 author: d34dmeat
 changelog: 
   + trying some things out.
@@ -25,10 +25,12 @@ out_pin:right output
 
 
 import simple.jsfx-inc
+
+
 // insert a - before slider text to hide slider -- -Cuts
 slider1:Cuts=1<0,4,1>-Cuts
 slider2:Freq1=2000<20,20000,.1>Frequency center
-slider3:Values=0<0,5,1{Yes,No,Hello,Goodbye,Today,Tonight}>Greetings
+slider3:Values=0<0,3,1{Multiply,Subtract,Add,Replace,None}>Filter processing
 slider4:Vol1=0.2<-96,96,.0001>vol
 
 slider5:BBias=0 < 0, 1, .0001 > transistor - > tube(style)
@@ -36,9 +38,16 @@ slider5:BBias=0 < 0, 1, .0001 > transistor - > tube(style)
 slider6:50<10,20000,1>Freqency (Hz)
 slider7:-12<-120,12,1>Wet (dB)
 slider8:-3<-120,12,1>Dry (dB)
-slider9:mid_gain=-3<-120,12,1>Midgain (dB)
+slider9:mid_gain=-3<-120,120,1> Strange loudness Midgain (dB)
 slider10:filter_db=-30<-120,92,1>Filter gain (dB)
 slider11:Q=0.25<0,6,.001>Q
+
+
+slider12:bq_db=-30<-120,92,1>BQ Filter gain (dB)
+slider13:bq_Q=0.25<0,6,.001>BQ Q
+slider14:bq_Freq=2000<20,20000,.1>BQ Frequency (Hz)
+slider15:bq_filtertype=0<0,5,1{Lowpass,Highpass,Bandpass,Notch,Peak,Lowshelf,Highshelf}>BQ Filter type
+slider16:bq_filter=0<0,1,1{No,Yes}>Apply BQ Filter
 
 slider64:Gain_val=0 < -96, 96, .0001 >final gain(dB)
 
@@ -56,6 +65,10 @@ function FactorTodb(factor)(
   );
 filterL.eqPK(srate, Freq1, Q, filter_db); 
 filterR.eqPK(srate, Freq1, Q, filter_db);
+
+bq_filterL.bq_create(bq_filtertype, bq_db, bq_Q, bq_Freq, 1000);
+bq_filterR.bq_create(bq_filtertype, bq_db, bq_Q, bq_Freq, 1000);
+
 
 bias = 0;
 
@@ -75,6 +88,9 @@ bias = BBias / 2;
 wet = 2^(slider7/6);
 dry = 2^(slider8/6);
 
+bq_filterL.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
+bq_filterR.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
+
 gain = 0;
 tmpDet = 0;
 tmpEnv1 = 0.1;
@@ -88,6 +104,8 @@ spl0 *= dbToFactor(Vol1);
 spl1 *= dbToFactor(Vol1);
 filterL.eqPK(srate, Freq1, Q, filter_db); 
 filterR.eqPK(srate, Freq1, Q, filter_db);
+
+
 
 /*
  * Bias signal for tube style processing (more even harmonics.
@@ -112,8 +130,8 @@ values == 0 ?
   spl1 *= filterR.eqTick(spl1);
   ): values == 1 ?
   (
-    spl0 = filterL.eqTick(spl0);
-    spl1 = filterR.eqTick(spl1);
+    spl0 -= filterL.eqTick(spl0);
+    spl1 -= filterR.eqTick(spl1);
     )
     :values == 2 ?
     (
@@ -125,6 +143,11 @@ values == 0 ?
           spl0 = filterL.eqTick(spl0);
           spl1 = filterR.eqTick(spl1);
           );
+          
+  bq_filter == 1 ?(        
+  spl0 = bq_filterL.bq_process(spl0);
+  spl1 = bq_filterR.bq_process(spl1);
+  );
 /*
  * Un-bias signal.
  */
@@ -140,7 +163,7 @@ spl1 = max(min(spl1, 1), -1);
 
 
 
-// added filtering wet/dry from LOSER 50Hz Kicker
+// added sine wet/dry from LOSER 50Hz Kicker
 det = abs(sqrt(tmpDet = a0Det*(spl0+spl1)*2 - b1Det*tmpDet));
 env1 = sqrt(tmpEnv1 = a0Env1*det - b1Env1*tmpEnv1);
 env2 = sqrt(tmpEnv2 = a0Env2*det - b1Env2*tmpEnv2);
