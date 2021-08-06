@@ -1,6 +1,6 @@
 desc:SimpleFilter (d34dmeat)
 tags: filter processing equalizer
-version: 0.031
+version: 0.0311
 author: d34dmeat
 changelog: 
   + trying some things out.
@@ -38,7 +38,7 @@ slider5:BBias=0 < 0, 1, .0001 > transistor - > tube(style)
 slider6:50<10,20000,1>Freqency (Hz)
 slider7:-12<-120,12,1>Wet (dB)
 slider8:-3<-120,12,1>Dry (dB)
-slider9:mid_gain=-3<-120,120,1> Strange loudness Midgain (dB)
+slider9:mid_gain=-3<-120,24,1> Strange loudness Midgain (dB)
 slider10:filter_db=-30<-120,92,1>Filter gain (dB)
 slider11:Q=0.25<0,6,.001>Q
 
@@ -49,12 +49,54 @@ slider14:bq_Freq=2000<20,20000,.1>BQ Frequency (Hz)
 slider15:bq_filtertype=0<0,5,1{Lowpass,Highpass,Bandpass,Notch,Peak,Lowshelf,Highshelf}>BQ Filter type
 slider16:bq_filter=0<0,1,1{No,Yes}>Apply BQ Filter
 
+slider18:0<0,100,.01>saturation
+slider19:sat_gain=0<-120,92,1>Saturation gain (dB)
+slider20:1<0,20,1>saturation multiply
+
 slider64:Gain_val=0 < -96, 96, .0001 >final gain(dB)
 
 / these basic db calculations were stolen from beaunus
 
 
 @init
+  buf = 500;
+    idx = 0;
+    g_height = 0;
+function t_add(smpl)
+    instance(s, i, v) global(buf,g_height,idx)
+    (
+    s=0;
+    v=0;
+    //s[idx] = (-(smpl)*g_height*0.9)+g_height/2;
+    
+    //v[idx+1] = smpl; 
+    
+    );
+    
+function update_add(smpl)
+    local(i) global(buf,g_height,idx)
+    (
+    i=idx;
+    this.s[i] = (-(smpl)*g_height*0.9)+g_height/2;
+    
+    this.v[i+1] = smpl; 
+    
+    );
+    
+    
+  
+  function g_add(smpl)
+    instance(s,i) global(buf,g_height)
+    (
+    i=0;
+    while(i<buf)(
+    s[i]=s[i+1];
+    s[i+1] = (-(smpl)*g_height*0.9)+g_height/2;
+    i+=1;
+    );
+    );
+  hist.t_add(0);
+
 // these basic db calculations were stolen from beaunus
 function dbToFactor(dbValue)(
     10 ^ (dbValue / 20);
@@ -77,7 +119,7 @@ a0Det = 1.0 + b1Det;
 
 b1Env1 = -exp(-3 / srate );
 a0Env1 = 1.0 + b1Env1;
-b1Env2 = -exp(-30 / srate );
+b1Env2 = -exp(-20 / srate );
 a0Env2 = 1.0 + b1Env2;
 
 @slider
@@ -91,6 +133,10 @@ dry = 2^(slider8/6);
 bq_filterL.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
 bq_filterR.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
 
+foo=slider18/200*$pi;
+bar = sin(slider18/200*$pi);
+
+
 gain = 0;
 tmpDet = 0;
 tmpEnv1 = 0.1;
@@ -98,6 +144,8 @@ tmpEnv2 = 0;
 //buf[] = 0,0,0;
 
 @block
+
+  
 
 @sample
 spl0 *= dbToFactor(Vol1);
@@ -118,9 +166,16 @@ spl0 += bias;
 spl1 += bias;
 
 
-spl0 *= dbToFactor(Gain_val);
-spl1 *= dbToFactor(Gain_val);
 
+//saturation
+slider18 ?(
+i = 0;
+while(i<slider20)(
+spl0 += min(max( sin(max(min(spl0,1),-1)*foo)/bar ,-1) ,1)*dbToFactor(sat_gain);
+spl1 += min(max( sin(max(min(spl1,1),-1)*foo)/bar ,-1) ,1)*dbToFactor(sat_gain);
+i += 1;
+);
+);
 
 mgain = pregain(mid_gain);
 
@@ -158,8 +213,8 @@ spl0 /= (1 - (bias));
 spl1 /= (1 - (bias));
 
 // clip signal
-spl0 = max(min(spl0, 1), -1);
-spl1 = max(min(spl1, 1), -1);
+//spl0 = max(min(spl0, 1), -1);
+//spl1 = max(min(spl1, 1), -1);
 
 
 
@@ -175,4 +230,96 @@ gain == 0 ? pos=0;
 spl0 = sin(pos)*gain*wet + spl0*dry + spl0*mgain;
 spl1 = sin(pos)*gain*wet + spl1*dry + spl1*mgain;
 
+// clip signal
+spl0 = max(min(spl0, 1), -1);
+spl1 = max(min(spl1, 1), -1);
+
+spl0 *= dbToFactor(Gain_val);
+spl1 *= dbToFactor(Gain_val);
+
+//hist = spl1;
+//hist.g_add(spl0);
+idx <= buf ?(
+hist.update_add(spl0);
+//hist.s[idx] = (-(spl0)*g_height*0.9)+g_height/2;
+//hist.v[idx] = spl0;
+idx+=1;
+):
+(idx=0;);
 pos += adj;
+
+
+
+@gfx 400 400 
+    
+   sz=min(gfx_w,gfx_h);
+   top = (gfx_h-sz)*0.5;
+   left = (gfx_w-sz)*0.5;
+   right=gfx_w-left;
+   bottom=gfx_h-top;
+   g_height=gfx_h;
+   g_width=gfx_w/buf;
+   i<idx-10? (i = idx;);
+
+    gfx_a=0.3;
+    gfx_r=gfx_g=gfx_b=1;
+    
+    gfx_x=left; gfx_y=gfx_h*0.5;
+    gfx_lineto(right,gfx_y,0);
+    gfx_x=gfx_w*0.5; gfx_y=top;
+    gfx_lineto(gfx_x, bottom,0);
+    
+    gfx_x=left; gfx_y=bottom;
+    gfx_lineto(right,top,0);
+    
+    gfx_a=0.8;
+    gfx_g=0;
+    gfx_x=gfx_w*0.5; gfx_y=gfx_h*0.5;
+    
+    gfx_printf("%s%.1f%s%.1f","s value:",hist.s[idx]," v value: ",hist.sov[idx]);
+    //gfx_printf(#floorstr,"%s","stringent");
+    //sprintf(#flo,"%s%.1fdB",gfx_w<420?"":"floor: ",slider2);
+    //gfx_printf("%s%.1fdB",gfx_w<420?"":"floor: ",slider2);
+    
+    gfx_x=g_width*idx;
+    gfx_y=hist.s[idx-1];
+    
+    //gfx_lineto((gfx_w/buf)*(idx+1),-(spl1*sz)+g_height/2,20);
+    //gfx_rect(100,10,30,2+((max(0,hist.s[i]))*gfx_h*1.9));
+    
+    //gfx_lineto(gfx_x+g_width,hist.s[idx],20);
+    
+    function draw()local(sp,i,medi)
+    (
+    gfx_x=0;
+    sp=gfx_w/buf;
+    i=medi=0;
+    while(gfx_x<gfx_W)(
+    gfx_lineto(gfx_x+sp,this.s[i],0);
+    //medi+=max(0,this.s[i]);
+    medi += abs(this.v[i])-60;
+    gfx_x+=sp;
+    i+=1;
+    );
+    gfx_rect(gfx_w/2-25,gfx_h*0.5,medi/buf,medi/buf);
+    );
+    
+    
+    
+    function t_draw(i)local(sp,medi)
+        (
+        
+        sp=gfx_w/buf;
+        gfx_x=i*sp;
+        gfx_y=this.s[max(0,i-1)];
+        //medi=i;
+        //while(gfx_x<gfx_W)(
+        gfx_lineto(gfx_x+sp,this.s[i],20);
+        medi+=max(0,this.s[i]);
+        //gfx_x+=sp;
+        //i+=1;
+        //);
+        gfx_rect(gfx_w/2,100,50,(medi/i));
+        );
+    hist.draw();
+    //hist.t_draw(idx);
