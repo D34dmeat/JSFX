@@ -12,6 +12,8 @@
   PEAK    = 4;
   LOWSHELF  = 5;
   HIGHSHELF  = 6;
+  ONE_POLE_LP = 7;
+  ONE_POLE_HP = 8;
 
 
 function spline(x,ratio) (x + x * x * 0.5 * (ratio - 1); );
@@ -57,10 +59,11 @@ function bq_process(sample)
   
 function bq_create(filtertype, dbgain,  q, centerfreq, ibw)
   //global(srate)
-  local(A, omega, sn, cs, alpha, beta, alpha_m_A, alpha_d_A)
-  instance(type, A, a0, a1, a2, a3, a4, b0, b1, b2, x1, x2, y1, y2, cf, bw, gain)
+  local(omega, sn, cs, beta, alpha_m_A, alpha_d_A)
+  instance(type, A, a0, a1, a2, a3, a4, b0, b1, b2, x1, x2, y1, y2, cf, bw, gain, alpha,l_q)
   (
   type = filtertype;
+  l_q=q;
   A = 10^(dbgain / 40);
   omega = ( 2 * $pi) * centerfreq / srate;
   sn = sin(omega);
@@ -153,13 +156,15 @@ function bq_create(filtertype, dbgain,  q, centerfreq, ibw)
   a1 = b1 / b1;
   a2 = b2 / (1 - alpha_d_A);
   */
+  
   // scale
   
-  a1 /= (a0);
+    a1 /= (a0);
     a2 /= (a0);
-    b0 /= (a0);
+    b0 /= (a0);// norm alt b0 =1;
     b1 /= (a0);
     b2 /= (a0);
+    //a0=1;// normalization alternative
   
   a3 = a1 / a0;
   a4 = a2 / a0;
@@ -243,6 +248,151 @@ function bq_create(filtertype, dbgain,  q, centerfreq, ibw)
   );
   
   
+  /*alternatuve function for biquad*/
+  
+  function altBiquad(type, Fc, Fs, Q, peakGain) 
+    instance(V,a0,a1,a2,b1,b2,norm, b0,x1,x2,y1,y2,gain,A,cf)
+    (
+    
+     V = pow(10, peakGain / 20);
+     K = tan($pi * Fc / Fs);
+     
+     type==ONE_POLE_LP ? (
+      
+        b1 = exp(-2.0 * $pi * (Fc / Fs));
+        a0 = 1.0 - b1;
+        b1 = -b1;
+        a1 = a2 = b2 = 0;
+      ):
+      type==ONE_POLE_HP ? (
+        
+        b1 = -exp(-2.0 * $pi * (0.5 - Fc / Fs));
+        a0 = 1.0 + b1;
+        b1 = -b1;
+        a1 = a2 = b2 = 0;
+      ):
+      type==LOWPASS ? (
+        
+        norm = 1 / (1 + K / Q + K * K);
+        a0 = K * K * norm;
+        a1 = 2 * a0;
+        a2 = a0;
+        b1 = 2 * (K * K - 1) * norm;
+        b2 = (1 - K / Q + K * K) * norm;
+      
+      ):
+      type==HIGHPASS ? (
+        norm = 1 / (1 + K / Q + K * K);
+        a0 = 1 * norm;
+        a1 = -2 * a0;
+        a2 = a0;
+        b1 = 2 * (K * K - 1) * norm;
+        b2 = (1 - K / Q + K * K) * norm;
+        
+      ):
+      type==BANDPASS ? (
+        norm = 1 / (1 + K / Q + K * K);
+        a0 = K / Q * norm;
+        a1 = 0;
+        a2 = -a0;
+        b1 = 2 * (K * K - 1) * norm;
+        b2 = (1 - K / Q + K * K) * norm;
+      
+      ):
+      type==NOTCH ? (
+        norm = 1 / (1 + K / Q + K * K);
+        a0 = (1 + K * K) * norm;
+        a1 = 2 * (K * K - 1) * norm;
+        a2 = a0;
+        b1 = a1;
+        b2 = (1 - K / Q + K * K) * norm;
+        
+      
+      ):
+      type==PEAK ? (
+          peakGain >= 0 ?(
+          norm = 1 / (1 + 1/Q * K + K * K);
+          a0 = (1 + V/Q * K + K * K) * norm;
+          a1 = 2 * (K * K - 1) * norm;
+          a2 = (1 - V/Q * K + K * K) * norm;
+          b1 = a1;
+          b2 = (1 - 1/Q * K + K * K) * norm;
+        
+        ):(  
+          norm = 1 / (1 + V/Q * K + K * K);
+          a0 = (1 + 1/Q * K + K * K) * norm;
+          a1 = 2 * (K * K - 1) * norm;
+          a2 = (1 - 1/Q * K + K * K) * norm;
+          b1 = a1;
+          b2 = (1 - V/Q * K + K * K) * norm;
+        );
+        
+      ):
+      type==LOWSHELF ? (
+        
+        peakGain >= 0 ?(
+          norm = 1 / (1 + sqrt(2) * K + K * K);
+          a0 = (1 + sqrt(2*V) * K + V * K * K) * norm;
+          a1 = 2 * (V * K * K - 1) * norm;
+          a2 = (1 - sqrt(2*V) * K + V * K * K) * norm;
+          b1 = 2 * (K * K - 1) * norm;
+          b2 = (1 - sqrt(2) * K + K * K) * norm;
+        ):(
+          norm = 1 / (1 + sqrt(2*V) * K + V * K * K);
+          a0 = (1 + sqrt(2) * K + K * K) * norm;
+          a1 = 2 * (K * K - 1) * norm;
+          a2 = (1 - sqrt(2) * K + K * K) * norm;
+          b1 = 2 * (V * K * K - 1) * norm;
+          b2 = (1 - sqrt(2*V) * K + V * K * K) * norm;
+        ); 
+        
+        
+      ):
+        type==HIGHSHELF ? ( 
+        
+              peakGain >= 0?(
+                  norm = 1 / (1 + sqrt(2) * K + K * K);
+                  a0 = (V + sqrt(2*V) * K + K * K) * norm;
+                  a1 = 2 * (K * K - V) * norm;
+                  a2 = (V - sqrt(2*V) * K + K * K) * norm;
+                  b1 = 2 * (K * K - 1) * norm;
+                  b2 = (1 - sqrt(2) * K + K * K) * norm;
+              
+              ):(  
+                  norm = 1 / (V + sqrt(2*V) * K + K * K);
+                  a0 = (1 + sqrt(2) * K + K * K) * norm;
+                  a1 = 2 * (K * K - 1) * norm;
+                  a2 = (1 - sqrt(2) * K + K * K) * norm;
+                  b1 = 2 * (K * K - V) * norm;
+                  b2 = (V - sqrt(2*V) * K + K * K) * norm;
+              );
+        );
+        
+        b0=norm;
+        //normalization
+        
+         a1 /= (norm);
+         a2 /= (norm);
+         b0 /= (norm);// norm alt b0 =1;
+         b1 /= (norm);
+         b2 /= (norm);
+         a0 /= norm;// normalization alternative
+       
+      
+      x1 = 0;
+      x2 = 0;
+      y1 = 0;
+      y2 = 0;
+      A = V;
+      gain = peakGain;
+      cf=fc;
+    );    
+        
+    
+  
+  /* end of alt biquad*/
+  
+  
   
   // filter function basically stolen from chkhld
     // Peak Filter
@@ -265,6 +415,83 @@ function bq_create(filtertype, dbgain,  q, centerfreq, ibw)
       (this.m0 * sample + this.m1 * v1 + this.m2 * v2);
     );
     
+    
+function bq_filterstring(num)(
+  num==0?"Lowpass":num==1?"highpass":num==2?"Bandpass":num==3?"Notch":num==4?"Peak":num==5?"Lowshelf":num==6?"Highshelf":num==7?"One pole LP":num==8?"One pole HP";
+  );
+
+function bq_display(offsetx,offsety)local(len,plotType,indx,w,phi,y,loc_x)
+  (
+    gfx_y = offsety;
+    gfx_x = offsetx;
+    gfx_printf("A0: %.8f\n",this.a0);
+    gfx_printf("A1: %.8f\n",this.a1);
+    gfx_printf("A2: %.8f\n",this.a2);
+    gfx_printf("B0: %.8f\n",this.b0);
+    gfx_printf("B1: %.8f\n",this.b1);
+    gfx_printf("B2: %.8f\n\n",this.b2);
+    gfx_printf("Gain: %.8f\n",this.gain);
+    gfx_printf("center freq: %.8f\n",this.cf);
+    gfx_printf("bw: %.8f\n",this.bw);
+    gfx_printf("alpha: %.8f\n\n",this.alpha);
+    gfx_printf("TYPE: %s\n", bq_filterstring(this.type));
+    gfx_printf("Last input: %.8f\n",this.x1);
+    gfx_printf("Second to last input: %.8f\n",this.x2);
+    gfx_printf("Last output: %.8f\n",this.y1);
+    gfx_printf("Second to last output: %.8f\n",this.y2);
+    
+    //gfx_x = loc_x = gfx_w*0.6;
+    loc_X = gfx_x;
+    gfx_y += 300;
+    len = 200;
+    plotType =0;// 0 = linear 1 = logarithmic
+    indx=0;
+    gfx_printf("y Value: %.8f\n",y);
+    while(indx<len)(
+    
+    plotType == 0 ?(
+          w = indx / (len - 1) * $pi;  // 0 to pi, linear scale
+        ):plotType == 1 ?(
+         w = exp(log(1 / 0.001) * indx / (len - 1)) * 0.001 * $pi;  // 0.001 to 1, times pi, log scale
+          );
+         phi = (sin(w/2)^2);
+         y = log((this.a0+this.a1+this.a2^2) - 4*(this.a0*this.a1 + 4*this.a0*this.a2 + this.a1*this.a2)*phi + 16*this.a0*this.a2*phi*phi) - log((1+this.b1+this.b2^2) - 4*(this.b1 + 4*this.b2 + this.b1*this.b2)*phi + 16*this.b2*phi*phi);
+        y = y * 10 / log(10);
+        //y += this.A;
+        //max(max(-2,y),2);
+        //gfx_x += 1;
+        plotType == 0 ?(
+         // magPlot.push([idx / (len - 1) * Fs / 2, y]);
+          gfx_x=(indx / (len - 1) * srate / len)+loc_x;
+          gfx_y=1*y+gfx_h*.5 + offsety;
+         //gfx_lineto(idx / (len - 1) * srate / 2,10*y+100);
+          ) :plotType == 1 ?(
+          //magPlot.push([idx / (len - 1) / 2, y]);
+          gfx_x=(indx / (len - 1) / len) + loc_x;
+          gfx_y=1*y+gfx_h*.5 + offsety;
+         //gfx_lineto(indx / (len - 1) / 2,10*y+100);
+          );
+          gfx_setpixel(200,200,200);
+          //gfx_lineto(100,y+100);
+          //gfx_printf("y Value: %.8f\n",y);
+        /*if (idx == 0)
+          minVal = maxVal = y;
+        else if (y < minVal)
+          minVal = y;
+        else if (y > maxVal)
+          maxVal = y;
+    
+    gfx_y=this.a0*this.A;
+    gfx_setpixel(100,100,100);
+    gfx_x +=1;
+    gfx_y=this.a1*this.A;
+        gfx_setpixel(100,100,100);
+        gfx_x +=1;*/
+        indx += 1;
+    );
+  );
+    
+ 
     
     
     

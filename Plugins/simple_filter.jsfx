@@ -1,11 +1,11 @@
 desc:SimpleFilter (d34dmeat)
 tags: filter processing equalizer
-version: 0.0311
+version: 0.0312
 author: d34dmeat
 changelog: 
   + trying some things out.
 provides: 
-  simple_data/*
+  simple_data/*       */
 about:
   # test
   this is a test description waiting to happen
@@ -46,8 +46,8 @@ slider11:Q=0.25<0,6,.001>Q
 slider12:bq_db=-30<-120,92,1>BQ Filter gain (dB)
 slider13:bq_Q=0.25<0,6,.001>BQ Q
 slider14:bq_Freq=2000<20,20000,.1>BQ Frequency (Hz)
-slider15:bq_filtertype=0<0,5,1{Lowpass,Highpass,Bandpass,Notch,Peak,Lowshelf,Highshelf}>BQ Filter type
-slider16:bq_filter=0<0,1,1{No,Yes}>Apply BQ Filter
+slider15:bq_filtertype=0<0,7,1{Lowpass,Highpass,Bandpass,Notch,Peak,Lowshelf,Highshelf,One pole LP,One pole HP}>BQ Filter type
+slider16:bq_filter=0<0,2,1{No,Yes,Alternate}>Apply BQ Filter
 
 slider18:0<0,100,.01>saturation
 slider19:sat_gain=0<-120,92,1>Saturation gain (dB)
@@ -105,12 +105,33 @@ function dbToFactor(dbValue)(
 function FactorTodb(factor)(
     (20 * log(factor)) / (log(10));
   );
+  
+//Trying out adding filters  
 filterL.eqPK(srate, Freq1, Q, filter_db); 
 filterR.eqPK(srate, Freq1, Q, filter_db);
 
 bq_filterL.bq_create(bq_filtertype, bq_db, bq_Q, bq_Freq, 1000);
 bq_filterR.bq_create(bq_filtertype, bq_db, bq_Q, bq_Freq, 1000);
+//multi_filter=0;
+function int_multifilter()instance(L,R)( 
+    L.altBiquad(bq_filtertype, bq_Freq, srate, bq_Q, bq_db);
+    R.altBiquad(bq_filtertype, bq_Freq, srate, bq_Q, bq_db);
+    this;
+);
 
+function update_multifilter(filter_num)instance(T,filt_index)(
+  //filter_num = 1;
+  filt_index=0;
+  while(filt_index<filter_num)(
+  
+   T[filt_index] = int_multifilter();
+    filt_index += 1;
+    );
+);
+
+//multi_filter.update_multifilter(1);
+multi_filter.int_multifilter();
+//bq_temp=0;
 
 bias = 0;
 
@@ -132,6 +153,9 @@ dry = 2^(slider8/6);
 
 bq_filterL.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
 bq_filterR.bq_create(bq_filtertype, bq_db, bq_q, bq_Freq, 1000);
+
+//multi_filter.update_multifilter(1);
+multi_filter.int_multifilter();
 
 foo=slider18/200*$pi;
 bar = sin(slider18/200*$pi);
@@ -203,6 +227,7 @@ values == 0 ?
   spl0 = bq_filterL.bq_process(spl0);
   spl1 = bq_filterR.bq_process(spl1);
   );
+  
 /*
  * Un-bias signal.
  */
@@ -216,8 +241,11 @@ spl1 /= (1 - (bias));
 //spl0 = max(min(spl0, 1), -1);
 //spl1 = max(min(spl1, 1), -1);
 
-
-
+//bq_temp = multi_filter;
+ bq_filter == 2 ?(
+spl0=multi_filter.R.bq_process(spl0);
+spl1=multi_filter.L.bq_process(spl1);
+);
 // added sine wet/dry from LOSER 50Hz Kicker
 det = abs(sqrt(tmpDet = a0Det*(spl0+spl1)*2 - b1Det*tmpDet));
 env1 = sqrt(tmpEnv1 = a0Env1*det - b1Env1*tmpEnv1);
@@ -259,7 +287,7 @@ pos += adj;
    bottom=gfx_h-top;
    g_height=gfx_h;
    g_width=gfx_w/buf;
-   i<idx-10? (i = idx;);
+   //i<idx-10? (i = idx;);
 
     gfx_a=0.3;
     gfx_r=gfx_g=gfx_b=1;
@@ -281,13 +309,19 @@ pos += adj;
     //sprintf(#flo,"%s%.1fdB",gfx_w<420?"":"floor: ",slider2);
     //gfx_printf("%s%.1fdB",gfx_w<420?"":"floor: ",slider2);
     
-    gfx_x=g_width*idx;
-    gfx_y=hist.s[idx-1];
+    //gfx_x=g_width*idx;
+    //gfx_y=hist.s[idx-1];
     
     //gfx_lineto((gfx_w/buf)*(idx+1),-(spl1*sz)+g_height/2,20);
     //gfx_rect(100,10,30,2+((max(0,hist.s[i]))*gfx_h*1.9));
     
     //gfx_lineto(gfx_x+g_width,hist.s[idx],20);
+    bq_filter == 1 ?(
+    bq_filterL.bq_display(10,10);
+    ):(
+    //multi_filter.T[0]
+    multi_filter.L.bq_display(gfx_w*.5+10,10);
+    );
     
     function draw()local(sp,i,medi)
     (
@@ -302,6 +336,7 @@ pos += adj;
     i+=1;
     );
     gfx_rect(gfx_w/2-25,gfx_h*0.5,medi/buf,medi/buf);
+    gfx_line(gfx_w/2-25,gfx_h*0.5,gfx_w/2-25,gfx_h*0.3+medi/buf);
     );
     
     
