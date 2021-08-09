@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools" commit="7a950392a18c233219de40347bd4d6f5d4a84cfa">
+<index version="1" name="d34dmeat Tools" commit="c921a4013bdaec690a0ccb03f017646d4502fb8b">
+  <category name="FeedMe">
+    <reapack name="FeedMe.jsfx" type="effect" desc="FeedMe (d34dmeat) feedback filter effect">
+      <version name="0.021" author="d34dmeat" time="2021-08-09T04:33:47Z">
+        <changelog><![CDATA[+ trying some things out.]]></changelog>
+        <source>https://github.com/D34dmeat/JSFX/raw/d8b5c27efb0970e0db27f44974d7bf915819dabb/FeedMe/FeedMe.jsfx</source>
+        <source file="data/data.jsfx-inc">https://github.com/D34dmeat/JSFX/raw/d8b5c27efb0970e0db27f44974d7bf915819dabb/FeedMe/data/data.jsfx-inc</source>
+      </version>
+    </reapack>
+  </category>
   <category name="Plugins">
     <reapack name="simple_filter.jsfx" type="effect" desc="SimpleFilter (d34dmeat)">
       <metadata>
