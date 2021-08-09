@@ -50,9 +50,6 @@
         <changelog><![CDATA[+ trying some things out.]]></changelog>
         <source>https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/Plugins/simple_filter.jsfx</source>
         <source file="simple_data/simple.jsfx-inc">https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/Plugins/simple_data/simple.jsfx-inc</source>
-        <source file="../LICENSE">https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/LICENSE</source>
-        <source file="../README.md">https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/README.md</source>
-        <source file="../index.xml">https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/index.xml</source>
       </version>
     </reapack>
     <reapack name="sine_sweep.jsfx" type="effect" desc="Sine Sweep Generator mod">
