@@ -25,6 +25,7 @@ out_pin:right output
 
 
 import simple.jsfx-inc
+import ladder_filter.jsfx-inc
 
 
 // insert a - before slider text to hide slider -- -Cuts
