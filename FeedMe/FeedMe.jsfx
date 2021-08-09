@@ -4,8 +4,18 @@ author: d34dmeat
 changelog: 
   + trying some things out.
 provides: 
-  simple_data/*       */
+  data/*
 about:
 #FeedMe
 by d34dmeat
 A simple feedback filter effect
+
+licence: MIT
+/*end*/
+in_pin:left input
+in_pin:right input
+out_pin:left output 
+out_pin:right output
+
+
+import data.jsfx-inc
