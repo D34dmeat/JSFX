@@ -1,0 +1,133 @@
+// ladder filter test
+
+
+@init
+  LOCAL_G = 0.07135868;
+  function ladder_update()(
+    this.s[0] = 2 * this.vout[0] - this.s[0];
+    this.s[1] = 2 * this.vout[0] - this.s[1];
+    this.s[2] = 2 * this.vout[0] - this.s[2];
+    this.s[3] = 2 * this.vout[0] - this.s[3];
+    );
+  
+  function ladder_nonlinear(input)
+    local(a, base, i, g, f)(
+    base[0] = input
+    i=0;
+    while(i<=2)(
+      base[i+1] = this.s[i]
+      i += 1;
+      );
+      
+    i=0;
+    while(i<=4)(
+      a[i] = tan(base[i]) / base[i];
+      i += 1;
+      );
+      
+    i=0;
+    while(i<=3)(
+      g[i] = 1/(1 + this.g * a[i+1]);
+      i += 1;
+      );
+    
+    f[3] = this.g * a[3] * g[3];
+    f[2] = this.g * a[2] * g[2] * f[3];
+    f[1] = this.g * a[1] * g[1] * f[2];
+    f[0] = this.g * g[0] * f[1];
+    
+    this.vout[3] = (f[0] * input * a[0] + f[1] * g[0] * this.s[0] + f[2] * g[1] * this.s[1] + f[3] * g[2] * this.s[2] + g[3] * this.s[3]) / (f[0] * this.g * a[3] + 1);
+    this.vout[0] = g[0] * (this.g * a[1] * (input * a[0] - this.res * a[3] * this.vout[3]) + this.s[0]);
+    this.vout[1] = g[1] * (this.g * a[2] * this.vout[0] + this.s[1]);
+    this.vout[2] = g[2] * (this.g * a[3] * this.vout[1] + this.s[2]);
+    );
+  
+  function ladder_linear(input)
+    local(g,i)(
+    g[0] = 1/(1 + this.g);
+    i=0;
+    while(i<=2)(
+      g[i+1] = this.g * g[i] *g[0];
+      i += 1;
+      );
+    
+    this.vout[3] = (g[3] * this.g * input + g[0] * this.s[3] + g[1] * this.s[2] + g[2] * this.s[1] + g[3] * this.s[0]) / (g[3] * this.g * this.res + 1.);
+    this.vout[0] = g[0] * (this.g * (input - this.res * this.vout[3]) + this.s[0]);
+    this.vout[1] = g[0] * (this.g * this.vout[0] + this.s[1]);
+    this.vout[2] = g[0] * (this.g * this.vout[1] + this.s[2]);
+    );
+  
+  function ladder_tick(input)(
+    this.drive > 0 ? (
+      this.ladder_nonlinear(input * (this.drive + 0.7));
+      ):(
+      this.ladder_linear(input);
+      );
+    this.ladder_update();
+    );
+    
+  function ladder_setup()
+    instance(s, vout, cutoff, res, g, poles, drive)(
+    s[0] = 0;
+    s[1] = 0;
+    s[2] = 0;
+    s[3] = 0;
+    vout[0] = 0;
+    vout[1] = 0;
+    vout[2] = 0;
+    vout[3] = 0;
+    cutoff = 1000;
+    res = 2;
+    poles = 3;
+    drive = 0;
+    g = 0.07135868;    
+    );
+  
+  
+  //  setters and getters
+  
+  function ladder_set_cutoff(val)(
+    this.cutoff = (20000. * (1.8^(10 * val - 10)));
+    this.g = tan($pi * this.cutoff / srate);
+    );
+  
+  function ladder_set_poles(val)(
+    this.poles = val * 3;
+    );
+  
+  function ladder_set_res(val)(
+    this.res = val * 4;
+    );
+  
+  function ladder_set_drive(val)(
+    this.drive = val * 5;
+    );
+    
+    //for display
+  function ladder_get_cutoff()(
+    1. + 0.17012975 * (0.00005 * this.cutoff)
+    );
+  
+  function ladder_get_poles()(
+    this.poles / 3;
+    );
+  
+  function ladder_get_res()(
+    this.res / 4;
+    );
+  
+  function ladder_get_drive()(
+    this.drive / 5;
+    );  
+    
+    // usage is meant to be:
+    // filter.ladder_setup();
+    // spl0 = filter.ladder_process(spl0);
+    
+    // TODO vary number of poles account for vout length 
+    
+  function ladder_process(sample)(
+    this.ladder_tick(sample);
+    this.vout[this.poles];
+    );
+    
