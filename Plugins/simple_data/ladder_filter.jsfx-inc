@@ -12,10 +12,10 @@
   
   function ladder_nonlinear(input)
     local(a, base, i, g, f)(
-    base[0] = input
+    base[0] = input;
     i=0;
     while(i<=2)(
-      base[i+1] = this.s[i]
+      base[i+1] = this.s[i];
       i += 1;
       );
       
