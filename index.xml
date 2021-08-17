@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<index version="1" name="d34dmeat Tools" commit="c921a4013bdaec690a0ccb03f017646d4502fb8b">
+<index version="1" name="d34dmeat Tools" commit="e5ab262f6f3918cf5534f413f1cfe299b947fb98">
   <category name="FeedMe">
     <reapack name="FeedMe.jsfx" type="effect" desc="FeedMe (d34dmeat) feedback filter effect">
       <version name="0.021" author="d34dmeat" time="2021-08-09T04:33:47Z">
@@ -61,7 +61,7 @@
         <source file="simple_data/simple.jsfx-inc">https://github.com/D34dmeat/JSFX/raw/7a950392a18c233219de40347bd4d6f5d4a84cfa/Plugins/simple_data/simple.jsfx-inc</source>
       </version>
     </reapack>
-    <reapack name="sine_sweep.jsfx" type="effect" desc="Sine Sweep Generator mod">
+    <reapack name="sine_sweep.jsfx" type="effect" desc="Sine Sweep Generator Modified with outputvolume">
       <metadata>
         <description><![CDATA[{\rtf1\ansi\deff0{\fonttbl{\f0 \fswiss Helvetica;}{\f1 Courier;}}
 {\colortbl;\red255\green0\blue0;\red0\green0\blue255;}
